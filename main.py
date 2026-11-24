@@ -5,6 +5,10 @@ from fastapi import FastAPI
 from controller.test_controller import router as test_router
 from database import database
 
+from controller.question_controller import router as question_router
+
+from controller.answer_controller import router as answer_router
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -18,3 +22,7 @@ async def lifespan(_app: FastAPI):
 app: FastAPI = FastAPI(title="Poll Service", lifespan=lifespan)
 
 app.include_router(test_router)
+
+app.include_router(question_router)
+
+app.include_router(answer_router)
