@@ -2,6 +2,8 @@ from typing import List, Optional
 
 from fastapi import HTTPException, status
 
+from api.internal_api.user_service import user_service_api
+from api.internal_api.user_service.model.user_response import UserResponse
 from model.answer import Answer, SelectedOption
 from repository import answer_repository
 from service import question_service
@@ -9,6 +11,19 @@ from service import question_service
 
 async def create_answer(answer: Answer) -> Answer:
     await question_service.get_question_by_id(answer.question_id)
+
+    user: Optional[UserResponse] = await user_service_api.get_user_by_id(answer.user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {answer.user_id} not found"
+        )
+
+    if not user.is_registered:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"User with id {answer.user_id} is not registered and cannot answer questions"
+        )
 
     existing_answer: Optional[Answer] = await answer_repository.get_answer_by_user_and_question(
         answer.user_id, answer.question_id
