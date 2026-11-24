@@ -28,6 +28,10 @@ async def get_answer_by_id(answer_id: int) -> Answer:
 async def update_answer(answer_id: int, answer_update_request: AnswerUpdateRequest) -> Answer:
     return await answer_service.update_answer(answer_id, answer_update_request.selected_option)
 
+@router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_answers_by_user_id(user_id: int) -> None:
+    await answer_service.delete_answers_by_user_id(user_id)
+
 
 @router.delete("/{answer_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_answer_by_id(answer_id: int) -> None:

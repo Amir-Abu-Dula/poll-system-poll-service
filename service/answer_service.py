@@ -76,3 +76,6 @@ async def update_answer(answer_id: int, selected_option: SelectedOption) -> Answ
 async def delete_answer_by_id(answer_id: int) -> None:
     await get_answer_by_id(answer_id)
     await answer_repository.delete_answer_by_id(answer_id)
+
+async def delete_answers_by_user_id(user_id: int) -> None:
+    await answer_repository.delete_answers_by_user_id(user_id)
