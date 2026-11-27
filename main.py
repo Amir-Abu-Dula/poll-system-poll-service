@@ -9,6 +9,8 @@ from controller.question_controller import router as question_router
 
 from controller.answer_controller import router as answer_router
 
+from controller.statistics_controller import router as statistics_router
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -26,3 +28,5 @@ app.include_router(test_router)
 app.include_router(question_router)
 
 app.include_router(answer_router)
+
+app.include_router(statistics_router)

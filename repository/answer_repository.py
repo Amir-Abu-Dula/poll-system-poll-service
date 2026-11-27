@@ -87,3 +87,45 @@ async def delete_answers_by_user_id(user_id: int) -> None:
     DELETE FROM answer WHERE user_id = :user_id
     """
     await database.execute(query, {"user_id": user_id})
+async def count_answers_by_user_id(user_id: int) -> int:
+    query: str = """
+    SELECT COUNT(*) AS total FROM answer WHERE user_id = :user_id
+    """
+    record: Optional[Record] = await database.fetch_one(query, {"user_id": user_id})
+    return record["total"] if record else 0
+
+
+async def get_answers_by_user_id(user_id: int) -> List[Answer]:
+    query: str = """
+    SELECT * FROM answer WHERE user_id = :user_id
+    """
+    records: List[Record] = await database.fetch_all(query, {"user_id": user_id})
+    return [_to_answer(record) for record in records]
+
+
+async def count_answers_by_option(question_id: int) -> Dict[str, int]:
+    query: str = """
+    SELECT selected_option, COUNT(*) AS total
+    FROM answer
+    WHERE question_id = :question_id
+    GROUP BY selected_option
+    """
+    records: List[Record] = await database.fetch_all(query, {"question_id": question_id})
+    return {record["selected_option"]: record["total"] for record in records}
+
+
+async def count_all_answers_by_question_and_option() -> Dict[int, Dict[str, int]]:
+    query: str = """
+    SELECT question_id, selected_option, COUNT(*) AS total
+    FROM answer
+    GROUP BY question_id, selected_option
+    """
+    records: List[Record] = await database.fetch_all(query)
+
+    counts: Dict[int, Dict[str, int]] = {}
+    for record in records:
+        question_id: int = record["question_id"]
+        if question_id not in counts:
+            counts[question_id] = {}
+        counts[question_id][record["selected_option"]] = record["total"]
+    return counts
